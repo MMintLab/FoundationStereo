@@ -41,6 +41,7 @@ Our method outperforms existing approaches in zero-shot stereo matching tasks ac
 ```
 conda env create -f environment.yml
 conda activate foundation_stereo
+python -m pip install flash-attn
 ```
 
 # Model Weights
