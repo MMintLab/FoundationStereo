@@ -41,6 +41,7 @@ Our method outperforms existing approaches in zero-shot stereo matching tasks ac
 ```
 conda env create -f environment.yml
 conda activate foundation_stereo
+python -m pip install flash-attn
 ```
 
 # Model Weights
@@ -59,13 +60,16 @@ You can see output point cloud.
 
 Tips:
 - The input left and right images should be **rectified and undistorted**, which means there should not be fisheye kind of lens distortion and the epipolar lines are horizontal between the left/right images. If you obtain images from stereo cameras such as Zed, they usually have [handled this](https://github.com/stereolabs/zed-sdk/blob/3472a79fc635a9cee048e9c3e960cc48348415f0/recording/export/svo/python/svo_export.py#L124) for you.
+- Do not swap left and right image. The left image should really be obtained from the left-side camera (objects will appear righter in the image).
 - We recommend to use PNG files with no lossy compression
-- Our method works best on stereo RGB images. However, we have also tested it on gray scale images or IR images and it works well too.
+- Our method works best on stereo RGB images. However, we have also tested it on monochrome or IR stereo images (e.g. from RealSense D4XX series) and it works well too.
 - For all options and instructions, check by `python scripts/run_demo.py --help`
+- To get point cloud for your own data, you need to specify the intrinsics. In the intrinsic file in args, 1st line is the flattened 1x9 intrinsic matrix, 2nd line is the baseline (distance) between the left and right camera, unit in meters.
 - For high-resolution image (>1000px), you can run with `--hiera 1` to enable hierarchical inference for better performance.
 - For faster inference, you can reduce the input image resolution by e.g. `--scale 0.5`, and reduce refine iterations by e.g. `--valid_iters 16`.
 
 
+<<<<<<< HEAD
 # FAQ
 - Q: My GPU doesn't support Flash attention?<br>
   A: See [this](https://github.com/NVlabs/FoundationStereo/issues/13#issuecomment-2708791825).
@@ -77,10 +81,67 @@ Tips:
 # FSD Dataset
 Coming soon by the end of March. Stay tuned!
 
+=======
+
+# ONNX/TensorRT Inference (Experimental)
+To create ONNX models:
+- Make [this change](https://github.com/NVlabs/FoundationStereo/issues/13#issuecomment-2708791825) to replace flash-attention
+
+- Make ONNX:
+```
+export XFORMERS_DISABLED=1
+python scripts/make_onnx.py --save_path ./output/foundation_stereo.onnx --ckpt_dir ./pretrained_models/23-51-11/model_best_bp2.pth --height 480 --width 640 --valid_iters 22
+```
+- Convert ONNX to TensorRT:
+```
+trtexec --onnx=./output/foundation_stereo.onnx --saveEngine=./output/foundation_stereo.engine --fp16 --verbose
+```
+
+We have observed 6X speed on the same GPU 3090 with TensorRT FP16. Although how much it speeds up depends on various factors, we recommend trying it out if you care about faster inference. Also remember to adjust the args setting based on your need.
+
+This feature is experimental as of now and contributions are welcome!
+
+
+# FSD Dataset
+>>>>>>> f5a8045
 <p align="center">
   <img src="https://raw.githubusercontent.com/NVlabs/FoundationStereo/website/static/images/sdg_montage.jpg" width="800"/>
 </p>
 
+<<<<<<< HEAD
+=======
+You can download the whole dataset [here](https://drive.google.com/drive/folders/1YdC2a0_KTZ9xix_HyqNMPCrClpm0-XFU?usp=sharing) (>1TB). We also provide a small [sample data](https://drive.google.com/file/d/1dJwK5x8xsaCazz5xPGJ2OKFIWrd9rQT5/view?usp=drive_link) (3GB) to peek. The whole dataset contains ~1M data points, where each consists of:
+- Left and right images
+- Ground-truth disparity
+
+You can check how to read data by using our example with the sample data:
+```
+python scripts/vis_dataset.py --dataset_path ./DATA/sample/manipulation_v5_realistic_kitchen_2500_1/dataset/data/
+```
+
+It will produce:
+<p align="center">
+  <img src="./teaser/fsd_sample.png" width="800"/>
+</p>
+
+
+
+
+# FAQ
+- Q: Conda install does not work for me?<br>
+  A: Check [this](https://github.com/NVlabs/FoundationStereo/issues/20)
+
+- Q: My GPU doesn't support Flash attention?<br>
+  A: See [this](https://github.com/NVlabs/FoundationStereo/issues/13#issuecomment-2708791825)
+
+- Q: RuntimeError: cuDNN error: CUDNN_STATUS_NOT_SUPPORTED. This error may appear if you passed in a non-contiguous input.<br>
+  A: This may indicate OOM issue. Try reducing your image resolution or use a GPU with more memory.
+
+- Q: How to run with RealSense?<br>
+  A: See [this](https://github.com/NVlabs/FoundationStereo/issues/26)
+
+
+>>>>>>> f5a8045
 # BibTeX
 ```
 @article{wen2025stereo,

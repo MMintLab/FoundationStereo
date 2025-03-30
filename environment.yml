@@ -8,6 +8,7 @@ dependencies:
   - python=3.9
   - pip
   - pip:
+    - numpy==1.26.4
     - torch==2.4.1
     - torchvision==0.19.1
     - torchaudio==2.4.1
@@ -30,6 +31,6 @@ dependencies:
     - transformations
     - einops
     - gdown
-    - flash-attn
     - nodejs
     - xformers==0.0.28.post1
+    - huggingface-hub
