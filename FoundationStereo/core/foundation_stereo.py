@@ -7,19 +7,19 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
 
-import torch,pdb,logging,timm
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import sys,os
-code_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(f'{code_dir}/../')
-from core.update import *
-from core.extractor import *
-from core.geometry import Combined_Geo_Encoding_Volume
-from core.submodule import *
-from core.utils.utils import *
-from Utils import *
-import time,huggingface_hub
+import logging
+import timm
+from .update import *
+from .extractor import *
+from .geometry import Combined_Geo_Encoding_Volume
+from .submodule import *
+from .utils.utils import *
+from FoundationStereo.Utils import *
+import time
+import huggingface_hub
 
 
 try:

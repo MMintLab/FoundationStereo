@@ -10,9 +10,7 @@
 import torch,logging,os,sys,urllib,warnings
 import torch.nn as nn
 import torch.nn.functional as F
-code_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(f'{code_dir}/../')
-from core.submodule import *
+from .submodule import *
 from Utils import *
 import timm
 
@@ -289,7 +287,7 @@ class DepthAnythingFeature(nn.Module):
             'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
             'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]}
         }
-        from depth_anything.dpt import DepthAnything
+        from FoundationStereo.depth_anything.dpt import DepthAnything
         self.encoder = encoder
         depth_anything = DepthAnything(model_configs[encoder])
         self.depth_anything = depth_anything
