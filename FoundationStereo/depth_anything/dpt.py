@@ -5,6 +5,7 @@ import torch.nn.functional as F
 code_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(f'{code_dir}/../')
 from dinov2.models.vision_transformer import vit_small,vit_base,vit_large
+from dinov2.hub.backbones import dinov2_vits14, dinov2_vitb14, dinov2_vitl14
 from depth_anything.blocks import FeatureFusionBlock, _make_scratch
 
 
@@ -151,12 +152,13 @@ class DPT_DINOv2(nn.Module):
 
         assert encoder in ['vits', 'vitb', 'vitl']
 
-        # in case the Internet connection is not stable, please load the DINOv2 locally
-        # if localhub:
-        #     self.pretrained = torch.hub.load('torchhub/facebookresearch_dinov2_main', 'dinov2_{:}14'.format(encoder), source='local', pretrained=False)
-        # else:
-        self.pretrained = torch.hub.load('facebookresearch/dinov2', 'dinov2_{:}14'.format(encoder), pretrained=pretrained_dino, force_reload=True)
-
+        # Use local dinov2 models to avoid module naming conflicts
+        dinov2_models = {
+            'vits': dinov2_vits14,
+            'vitb': dinov2_vitb14,
+            'vitl': dinov2_vitl14
+        }
+        self.pretrained = dinov2_models[encoder](pretrained=pretrained_dino)
 
         dim = self.pretrained.blocks[0].attn.qkv.in_features
 
